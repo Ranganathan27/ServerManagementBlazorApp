@@ -1,7 +1,14 @@
+using Microsoft.EntityFrameworkCore;
 using ServerManagementBlazorApp.Components;
+using ServerManagementBlazorApp.Data;
 using ServerManagementBlazorApp.StateStore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContextFactory<ServerManagementContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ServerManagement"));
+});
 
 builder.Services.AddTransient<SessionStorage>();
 builder.Services.AddScoped<ContainerStorage>();
