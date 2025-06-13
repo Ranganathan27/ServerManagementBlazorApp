@@ -1,0 +1,48 @@
+﻿@page "/server/add"
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+<h3>AddServer</h3>
+<br />
+<br />
+
+<EditForm Model="server" FormName="FormServer" OnValidSubmit="Submit">
+	<DataAnnotationsValidator></DataAnnotationsValidator>
+	<ValidationSummary></ValidationSummary>
+	<div class="row">
+		<div class="mb-3">
+			<label class="form-label">Name</label>
+			<InputText @bind-Value="server.Name" class="form-control"></InputText>
+			<ValidationMessage For="() => server.Name"></ValidationMessage>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">City</label>
+			<InputText @bind-Value="server.City" class="form-control"></InputText>
+			<ValidationMessage For="() => server.City"></ValidationMessage>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Online</label>
+			<InputCheckbox @bind-Value="server.IsOnline" class="form-check-input"></InputCheckbox>
+		</div>
+		<div class="row mb-3">
+			<div class="col-md-12 justify-content-center d-flex">
+				<button type="submit" class="btn btn-success">Submit</button>
+				<a href="/server" class="btn btn-danger ms-2">Close</a>
+			</div>
+		</div>
+	</div>
+</EditForm>
+
+@code {
+	//[SupplyParameterFromForm]
+	private ServerManagementBlazorApp.Models.Server server { get; set; } = new Models.Server() { IsOnline = false };
+
+	private async Task Submit()
+	{
+		if(server != null)
+		{
+			ServerRepository.AddServer(server);
+			NavigationManager.NavigateTo($"/server/back_from/{this.server?.City}");
+			await Task.CompletedTask;
+		}
+	}
+}

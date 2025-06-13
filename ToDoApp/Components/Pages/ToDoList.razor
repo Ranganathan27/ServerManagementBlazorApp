@@ -1,0 +1,28 @@
+﻿@page "/todolist"
+@rendermode InteractiveServer
+<h3>ToDoList</h3>
+
+<br />
+<button type="button" class="btn btn-success" @onclick="AddTask"> Add Task</button>
+
+<br />
+<br />
+
+@if(items != null && items.Count > 0)
+{
+	<ul class="list-unstyled">
+		<ItemsListComponent Items="items"></ItemsListComponent>
+	</ul>
+}
+
+@code {
+
+	private List<ToDoModel> items = ToDoRepository.GetItems();
+
+	private void AddTask()
+	{
+		ToDoRepository.AddItem(new ToDoModel { Name = "NewTask" });
+		items = ToDoRepository.GetItems();
+	}
+
+}

@@ -1,0 +1,28 @@
+﻿<div class="input-group mb-3 input-width" @attributes="OtherAttributes">
+	<input type="text" class="form-control" placeholder="Search Server..." @bind-value="SearchFilter" @bind-value:event="oninput" />
+	<button type="button" class="btn btn-outline-secondary ms-1 rounded-3" id="SearchButton" @onclick="HandleSearch">Search</button>
+</div>
+
+@code {
+
+	private string SearchFilter = "";
+
+	[Parameter]
+	public EventCallback<string> SearchServerCallBack{ get; set;}
+
+	[Parameter(CaptureUnmatchedValues = true)]
+	public Dictionary<string,object>? OtherAttributes{ get; set; }
+
+	private void HandleSearch()
+	{
+		SearchServerCallBack.InvokeAsync(SearchFilter);
+	}
+
+	/// <summary>
+	/// Handles to clear thr value in the search textbox.
+	/// </summary>
+	public void ClearSearchInput()
+	{
+		this.SearchFilter = string.Empty;
+	}
+}

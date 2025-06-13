@@ -1,0 +1,21 @@
+﻿<div class="mb-3 input-width">
+	<label class="form-label">@Label</label>
+
+	@if(Control is not null)
+	{
+		@Control
+	}
+	@Validation
+</div>
+
+@code {
+	[Parameter]
+	public string? Label{ get; set; }
+
+	[Parameter]
+	public RenderFragment? Control{ get; set; }
+
+	[Parameter]
+	public RenderFragment? Validation { get; set; }
+
+}

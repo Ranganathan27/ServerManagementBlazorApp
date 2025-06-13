@@ -1,0 +1,71 @@
+﻿@page "/servername"
+
+@rendermode InteractiveServer
+@using ServerManagementBlazorApp.StateStore
+
+@inject SessionStorage sessionStorage
+
+@inject ContainerStorage containerStorage
+
+@inject NavigationManager NavigationManager
+
+<h3>Server Name</h3>
+<br />
+
+@if(!string.IsNullOrWhiteSpace(this.errorMessage))
+{
+	<div class="alert alert-danger">
+		@errorMessage
+	</div>
+}
+
+@if (NewServer is not null)
+{
+	<FieldComponent Label="Name">
+	<Control>
+		<input type="text" @bind-value="NewServer.Name" class="form-control" />
+	</Control>
+</FieldComponent>
+}
+
+<br />
+<button type="button" class="btn btn-primary" @onclick="GoNext"> Next </button>
+
+
+
+@code {
+
+	private string? errorMessage;
+
+	private string? serverName;
+
+	private Server? NewServer;
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+	}
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if(firstRender)
+		{
+			NewServer = new Server();
+			StateHasChanged();
+
+		}
+	}
+
+	private void GoNext()
+	{
+		if(string.IsNullOrWhiteSpace(NewServer!.Name))
+		{
+			this.errorMessage = "Server name is required";
+		}
+		else
+		{
+			containerStorage.SetServer(NewServer);
+			NavigationManager.NavigateTo($"/cityName?servername={NewServer!.Name}");
+		}
+	}
+}

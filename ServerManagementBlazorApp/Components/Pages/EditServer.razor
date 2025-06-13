@@ -1,0 +1,95 @@
+﻿@page "/server/{id:int}"
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation" ConfirmExternalNavigation="true"></NavigationLock>
+
+<div class="border border-1 border-secondary mt-2 p-3 rounded-2">
+	<h3 class="mt-3">Edit Server</h3>
+	<br />
+
+	@if (server != null)
+	{
+		<EditForm Model="server" FormName="FormServer" OnValidSubmit="Submit">
+			<DataAnnotationsValidator></DataAnnotationsValidator>
+			<ValidationSummary></ValidationSummary>
+			<div class="row">
+				<InputNumber @bind-Value="server.ServerId" hidden></InputNumber>
+
+				<FieldComponent Label="Name"> 
+					<Control>
+						<InputText @bind-Value="server.Name" class="form-control"></InputText>
+					</Control>
+					<Validation>
+						<ValidationMessage For="() => server.Name"></ValidationMessage>
+					</Validation>
+				</FieldComponent>
+
+				<FieldComponent Label="City">
+					<Control>
+						<InputText @bind-Value="server.City" class="form-control"></InputText>
+					</Control>
+					<Validation>
+						<ValidationMessage For="() => server.City"></ValidationMessage>
+					</Validation>
+				</FieldComponent>
+
+
+				<FieldComponent Label="Online">
+					<Control>
+						<InputCheckbox @bind-Value="server.IsOnline" class="form-check-input"></InputCheckbox>
+					</Control>
+				</FieldComponent>
+
+				<div class="row mb-3">
+					<div class="col-md-12 justify-content-center d-flex">
+						<button type="submit" class="btn btn-success">Submit</button>
+						<a href="/server" class="btn btn-danger ms-2">Close</a>
+					</div>
+				</div>
+			</div>
+		</EditForm>
+	}
+	else
+	{
+		<p class="text-danger">@server!.ServerId is not found</p>
+	}
+
+</div>
+
+
+
+@code {
+	[Parameter]
+	public int Id { get; set; }
+	
+	[SupplyParameterFromForm(FormName = "FormServer")]
+	private ServerManagementBlazorApp.Models.Server? server { get; set; }
+
+	protected override void OnParametersSet()
+	{
+		base.OnParametersSet();
+		server ??= ServerRepository.GetServerId(this.Id);
+	}
+
+	private async Task Submit()
+	{
+		if(server != null)
+		{
+			ServerRepository.UpdateServerDetails(server.ServerId, server);
+		}
+
+		NavigationManager.NavigateTo($"/server/back_from/{this.server?.City}");
+		await Task.CompletedTask;
+	}
+
+	private async Task OnBeforeInternalNavigation(LocationChangingContext context)
+	{
+		var isConfirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure want to exit?");
+
+		if(!isConfirmed)
+		{
+			context.PreventNavigation();
+		}
+	}
+}

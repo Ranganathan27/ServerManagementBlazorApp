@@ -1,0 +1,51 @@
+﻿@if(Cities != null && Cities.Count > 0)
+{
+	<div class="container-fluid mt-4 text-center">
+		<div class="row w-100">
+			@foreach (var city in Cities)
+			{
+				<CityComponent city="@city" SelectedCity="@SelectedCity" SelectCityCallBack="HandleCitySelection"></CityComponent>
+			}
+		</div>
+	</div>
+}
+@code 
+{
+	/// <summary>
+	/// 
+	/// </summary>
+	[Parameter]
+	public EventCallback<string> SelectCityCallBack { get; set; }
+
+	/// <summary>
+	/// 
+	/// </summary>
+	[Parameter]
+	public string SelectedCity { get; set; } = "chennai";
+
+	/// <summary>
+	///
+	/// </summary>
+	private List<String> Cities = CitiesRepository.GetCities();
+
+	/// <summary>
+	///
+	/// </summary>
+	private List<String> CitiesImage = new List<string> { "Chennai.png", "Coimbatore.jpg", "Erode.png", "Madurai.jpg", "Theni.jpg", "Thirichy.jpg" };
+
+	private void HandleCitySelection(string cityName)
+	{
+		SelectedCity = cityName;
+
+		SelectCityCallBack.InvokeAsync(cityName);
+	}
+
+	/// <summary>
+	/// Handles to Clear the selection of the city.
+	/// </summary>
+	public void ClearCitySelection()
+	{
+		this.SelectedCity = string.Empty;
+	}
+
+}

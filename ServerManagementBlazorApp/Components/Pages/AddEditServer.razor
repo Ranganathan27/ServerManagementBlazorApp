@@ -1,0 +1,110 @@
+﻿@page "/servers/{id:int?}"
+@inject NavigationManager NavigationManager
+
+@if(Id.HasValue)
+{
+	<h3>Edit Server</h3>
+}
+else
+{
+	<h3>Add Server</h3>
+}
+
+@if (server != null)
+{
+	<EditForm Model="server" FormName="FormServer" OnValidSubmit="Submit">
+		<DataAnnotationsValidator></DataAnnotationsValidator>
+		<ValidationSummary></ValidationSummary>
+		<div class="row">
+			@if(this.server.ServerId > 0)
+			{
+				<InputNumber @bind-Value="server.ServerId" hidden></InputNumber>
+			}
+			<FieldComponent Label="Name">
+				<Control>
+					<InputText @bind-Value="server.Name" class="form-control"></InputText>
+				</Control>
+				<Validation>
+					<ValidationMessage For="() => server.Name"></ValidationMessage>
+				</Validation>
+			</FieldComponent>
+
+			<FieldComponent Label="City">
+				<Control>
+					<InputText @bind-Value="server.City" class="form-control"></InputText>
+				</Control>
+				<Validation>
+					<ValidationMessage For="() => server.City"></ValidationMessage>
+				</Validation>
+			</FieldComponent>
+
+
+			<FieldComponent Label="Online">
+				<Control>
+					<InputCheckbox @bind-Value="server.IsOnline" class="form-check-input"></InputCheckbox>
+				</Control>
+			</FieldComponent>
+
+			<div class="row mb-3">
+				<div class="col-md-12 justify-content-center d-flex">
+
+					@if (this.server.ServerId > 0)
+					{
+						<button type="submit" class="btn btn-success">Update</button>
+					}
+					else
+					{
+						<button type="submit" class="btn btn-success">Save</button>
+					}
+					<a href="/server" class="btn btn-danger ms-2">Close</a>
+				</div>
+			</div>
+		</div>
+	</EditForm>
+}
+
+@code {
+	[Parameter]
+	public int? Id { get; set; }
+
+	[SupplyParameterFromForm(FormName = "FormServer")]
+	private ServerManagementBlazorApp.Models.Server? server { get; set; }
+
+	[SupplyParameterFromQuery]
+	public string? City { get; set; }
+
+	protected override void OnParametersSet()
+	{
+		if(this.Id.HasValue)
+		{
+			server ??= ServerRepository.GetServerId(this.Id.Value);
+		}
+		else
+		{
+			server ??= new ServerManagementBlazorApp.Models.Server() { IsOnline = false };
+		}
+
+		if (this.server != null && !string.IsNullOrWhiteSpace(this.City))
+		{
+			server.City = this.City;
+		}
+	}
+
+	private async Task Submit()
+	{
+		if (server != null)
+		{
+			if (this.Id.HasValue)
+			{
+				ServerRepository.UpdateServerDetails(server.ServerId, server);
+			}
+			else
+			{
+				ServerRepository.AddServer(server);
+			}
+		}
+
+		NavigationManager.NavigateTo($"/server/back_from/{this.server?.City}");
+		await Task.CompletedTask;
+	}
+}

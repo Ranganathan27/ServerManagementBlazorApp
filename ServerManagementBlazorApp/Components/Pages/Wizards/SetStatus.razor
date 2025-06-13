@@ -1,0 +1,95 @@
+﻿@page "/serverstatus"
+@rendermode InteractiveServer
+
+@inject NavigationManager NavigationManager
+
+@using ServerManagementBlazorApp.StateStore
+
+@inject SessionStorage sessionStorage
+
+@inject ContainerStorage containerStorage
+
+
+<h3>SetStatus</h3>
+<br />
+
+@if(!string.IsNullOrWhiteSpace(this.errorMessage))
+{
+	<div class="alert alert-danger">
+		@errorMessage
+	</div>
+}
+
+@if (server is not null)
+{
+	<FieldComponent Label="Server-Status">
+		<Control><input type="checkbox" class="form-check-input ms-2" @bind-value="this.IsOnline" /></Control>
+	</FieldComponent>
+}
+<br />
+
+<button type="submit" class="btn btn-success" @onclick="Save"> Save </button>
+@code 
+{
+	private Server? server;
+
+	private string? errorMessage;
+
+	[SupplyParameterFromQuery]
+	private string? CityName{ get; set; }
+
+	[SupplyParameterFromQuery]
+	private string? ServerName{ get; set; }
+
+	private bool IsOnline { get; set; }
+
+	// protected override void OnAfterRender(bool firstRender)
+	// {
+	// 	if(firstRender)
+	// 	{
+	// 		if(string.IsNullOrWhiteSpace(ServerName))
+	// 		{
+	// 			this.errorMessage = "Server name wasn't provided";
+	// 			StateHasChanged();
+
+	// 		}
+	// 		else if(string.IsNullOrWhiteSpace(CityName))
+	// 		{
+	// 			this.errorMessage = "City Name wasn't provided";
+	// 			StateHasChanged();
+	// 		}
+	// 	}
+	// }
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if(firstRender)
+		{
+			this.server = this.containerStorage.GetServer();
+			StateHasChanged();
+		}
+	}
+
+	// private void Save()
+	// {
+	// 	var server = new Server
+	// 	{
+	// 		Name = this.ServerName,
+	// 		City = this.CityName,
+	// 		IsOnline = this.IsOnline,
+	// 	};
+
+	// 	ServerRepository.AddServer(server);
+	// 	NavigationManager.NavigateTo($"/server/back_from/{CityName}");
+	// }
+
+	private void Save()
+	{
+		if(server is not null)
+		{
+			containerStorage.SetServer(null);
+			ServerRepository.AddServer(server);
+			NavigationManager.NavigateTo($"/server/back_from/{server.City}");
+		}
+	}
+}

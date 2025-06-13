@@ -1,0 +1,108 @@
+﻿@using ServerManagementBlazorApp.StateStore
+@inject ChennaiOnlineServerStore ChennaiOnlineServerStore
+@inject MaduraiOnlineServerStore MaduraiOnlineServerStore
+
+@implements IDisposable 
+
+<div class="col">
+	<div class="card @(SelectedCity!.Equals(city,StringComparison.OrdinalIgnoreCase)?" border-2 border-primary":"")">
+		<div class="card text-center">
+			<img src="@($"/Images/{city}.png")" class="card-img-top mx-auto d-block" alt="..." style="height:100px; width:100px;">
+		</div>
+
+		<div class="card-body">
+			<button type="button" class="btn btn-outline-primary" @onclick="(() =>{SelectCity(city!);})">@city</button>
+		</div>
+		<div>
+			@switch(city)
+			{
+				case "Chennai":
+					<text>@numberOfServersOnline</text>
+				break;
+
+				case "Madurai":
+					<text>@numberOfServersOnline</text>
+				break;
+
+				default:
+				break;
+
+
+			}
+		</div>
+	</div>
+</div>
+
+@code {
+
+    private int numberOfServersOnline;
+
+    [Parameter]
+    public string? SelectedCity { get; set; } = "chennai";
+
+    [Parameter]
+    public string? city { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> SelectCityCallBack { get; set; }
+
+    private void SelectCity(string cityName)
+    {
+        SelectCityCallBack.InvokeAsync(cityName);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            switch(city)
+            {
+                case "Chennai":
+                    numberOfServersOnline = ChennaiOnlineServerStore.GetNumberOfServersOnline();
+                    ChennaiOnlineServerStore.AddStateChangeListeners(OnServersStatusChange);
+                    StateHasChanged();
+                    break;
+
+                case "Madurai":
+                    numberOfServersOnline = MaduraiOnlineServerStore.GetNumberOfServersOnline();
+                    MaduraiOnlineServerStore.AddStateChangeListeners(OnMaduraiServerStatusChange);
+                    StateHasChanged();
+                    break;
+
+                default:
+                    break;
+
+            }
+
+        }
+    }
+
+    private void OnServersStatusChange()
+    {
+        numberOfServersOnline = ChennaiOnlineServerStore.GetNumberOfServersOnline();
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        switch (city)
+        {
+            case "Chennai":
+                ChennaiOnlineServerStore.RemoveStateChangeListeners(OnServersStatusChange);
+                break;
+
+            case "Madurai":
+                MaduraiOnlineServerStore.RemoveStateChangeListeners(OnMaduraiServerStatusChange);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void OnMaduraiServerStatusChange()
+    {
+        numberOfServersOnline = MaduraiOnlineServerStore.GetNumberOfServersOnline();
+        StateHasChanged();
+    }
+}

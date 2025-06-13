@@ -1,0 +1,92 @@
+﻿@page "/server"
+@page "/server/back_from/{cityName}"
+
+@using ServerManagementBlazorApp.Models
+@using ServerManagementBlazorApp.StateStore
+@inject NavigationManager NavigationManager
+@inject ChennaiOnlineServerStore ChennaiOnlineServerStore
+@inject MaduraiOnlineServerStore MaduraiOnlineServerStore
+
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+
+<h3>Server</h3>
+
+<CityListComponent SelectedCity="@this.SelectedCityName" @ref="cityListComponent" SelectCityCallBack="HandleCitySelection"></CityListComponent>
+&nbsp;
+
+<SearchServerComponent @ref="searchServerComponent" SearchServerCallBack="HandleSearchSever" style="width:1000px" data-my-attribute="Sample Data"></SearchServerComponent>
+
+&nbsp;
+&nbsp;
+
+<CascadingValue Name="SelectedCity" Value="@SelectedCityName">
+	<ServerListComponent CityName="@this.SelectedCityName" SearchFilter="@this.SearchFilter"></ServerListComponent>
+</CascadingValue>
+
+
+<div class="d-flex justify-content-center">
+	<a href="/servername" class="btn btn-success">Add Server</a>
+</div>
+<div class="d-flex justify-content-center mt-3">
+	<button type="button" class="btn btn-danger">
+		Add Server 2</button>
+</div>
+
+@code {
+
+	[Parameter]
+	public string? CityName { get; set;}
+
+	private string SelectedCityName = "Chennai";
+	private string SearchFilter = "";
+	private CityListComponent? cityListComponent;
+	private SearchServerComponent? searchServerComponent;
+
+	private void HandleCitySelection(string cityName)
+	{
+		SelectedCityName = cityName;
+		SearchFilter = string.Empty;
+		searchServerComponent?.ClearSearchInput();
+	}
+
+	private void HandleSearchSever(string searchFilter)
+	{
+		this.SearchFilter = searchFilter;
+		cityListComponent?.ClearCitySelection();
+	}
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if(firstRender)
+		{
+			if(NavigationManager.Uri.Contains("back_from") && !string.IsNullOrWhiteSpace(CityName))
+			{
+				SelectedCityName = CityName;
+
+				StateHasChanged();
+			}
+		}
+
+		switch(SelectedCityName)
+		{
+			case "Chennai":
+
+				var serversChennai = ServerRepository.GetServerByCity("Chennai");
+
+				if (serversChennai is not null)
+					ChennaiOnlineServerStore.SetNumberOfServerOnline(serversChennai.Count(x => x.IsOnline));
+
+				break;
+
+			case "Madurai":
+				var serversMadurai = ServerRepository.GetServerByCity("Madurai");
+
+				if (serversMadurai is not null)
+					MaduraiOnlineServerStore.SetNumberOfServersOnline(serversMadurai.Count(x => x.IsOnline));
+
+					break;
+		}
+
+	}
+}

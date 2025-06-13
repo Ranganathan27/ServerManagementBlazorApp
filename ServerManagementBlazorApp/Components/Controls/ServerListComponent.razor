@@ -1,0 +1,60 @@
+﻿
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<table class="mt-3 table table-striped">
+	<RepeatedComponent Items="this.servers">
+		<Header>
+			<thead>
+				<tr>
+					<th>
+						Name
+					</th>
+					<th>
+						City
+					</th>
+					<th>
+						Status
+					</th>
+					<th>
+						People Online
+					</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+		</Header>
+		<Row Context="item">
+			<ServerComponent Server="item"></ServerComponent>
+		</Row>
+	</RepeatedComponent>
+</table>
+
+@code {
+
+	[Parameter]
+	public string? CityName { get; set; }
+
+	[Parameter]
+	public string? SearchFilter { get; set; } = string.Empty;
+
+	/// <summary>
+	///
+	/// </summary>
+	private List<ServerManagementBlazorApp.Models.Server>? servers;
+
+	protected override void OnParametersSet()
+	{
+		if (string.IsNullOrWhiteSpace(this.SearchFilter))
+		{
+			servers = ServerRepository.GetServerByCity(CityName ?? "chennai");
+		}
+		else
+		{
+			servers = ServerRepository.SearchServer(this.SearchFilter);
+
+		}
+	}
+
+
+}
