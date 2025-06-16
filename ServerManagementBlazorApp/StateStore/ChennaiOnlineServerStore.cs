@@ -9,7 +9,7 @@
             return _numberOfServersOnline;
         }
 
-        public void SetNumberOfServerOnline( int number)
+        public void SetNumberOfServerOnline(int number)
         {
             _numberOfServersOnline = number;
             base.BroadCastStateChange();

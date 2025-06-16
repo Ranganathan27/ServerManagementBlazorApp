@@ -1,5 +1,6 @@
 ﻿@page "/servers/{id:int?}"
 @inject NavigationManager NavigationManager
+@inject IServersEFCoreRepository ServersEFCoreRepository
 
 @if(Id.HasValue)
 {
@@ -77,7 +78,7 @@ else
 	{
 		if(this.Id.HasValue)
 		{
-			server ??= ServerRepository.GetServerId(this.Id.Value);
+			server ??= ServersEFCoreRepository.GetServersById(this.Id.Value);
 		}
 		else
 		{
@@ -96,11 +97,11 @@ else
 		{
 			if (this.Id.HasValue)
 			{
-				ServerRepository.UpdateServerDetails(server.ServerId, server);
+				ServersEFCoreRepository.UpdateServer(server, server.ServerId);
 			}
 			else
 			{
-				ServerRepository.AddServer(server);
+				ServersEFCoreRepository.AddServer(server);
 			}
 		}
 

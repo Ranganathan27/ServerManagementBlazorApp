@@ -3,7 +3,7 @@ using ServerManagementBlazorApp.Data;
 
 namespace ServerManagementBlazorApp.Models
 {
-    public class ServersEFCoreRepository
+    public class ServersEFCoreRepository : IServersEFCoreRepository
     {
         private readonly IDbContextFactory<ServerManagementContext> contextFactory;
 
@@ -14,7 +14,7 @@ namespace ServerManagementBlazorApp.Models
 
         public void AddServer(Server server)
         {
-            using var db =  this.contextFactory.CreateDbContext();
+            using var db = this.contextFactory.CreateDbContext();
             db.Servers.Add(server);
             db.SaveChanges();
         }
@@ -34,7 +34,7 @@ namespace ServerManagementBlazorApp.Models
         public Server? GetServersById(int Id)
         {
             using var db = this.contextFactory.CreateDbContext();
-            var server = db.Servers.FirstOrDefault(x=> x.ServerId == Id);
+            var server = db.Servers.FirstOrDefault(x => x.ServerId == Id);
 
             if (server is not null) return server;
 
@@ -46,19 +46,22 @@ namespace ServerManagementBlazorApp.Models
             using var db = this.contextFactory.CreateDbContext();
             var serverToUpdate = db.Servers.FirstOrDefault(x => x.ServerId == serverId);
 
-            if(serverToUpdate is not null)
+            if (serverToUpdate is not null)
             {
                 serverToUpdate.Name = server.Name;
                 serverToUpdate.City = server.City;
                 serverToUpdate.IsOnline = server.IsOnline;
-                
+
                 db.SaveChanges();
             }
         }
 
-        public void DeleteServer(Server server)
+        public void DeleteServer(int serverId)
         {
             using var db = this.contextFactory.CreateDbContext();
+            var server = db.Servers.Find(serverId);
+            if (server is null) return;
+
             db.Servers.Remove(server);
             db.SaveChanges();
         }

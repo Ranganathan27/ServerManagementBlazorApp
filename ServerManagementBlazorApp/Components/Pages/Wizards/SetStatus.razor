@@ -9,6 +9,8 @@
 
 @inject ContainerStorage containerStorage
 
+@inject IServersEFCoreRepository ServersEFCoreRepository
+
 
 <h3>SetStatus</h3>
 <br />
@@ -87,8 +89,8 @@
 	{
 		if(server is not null)
 		{
-			containerStorage.SetServer(null);
-			ServerRepository.AddServer(server);
+			containerStorage.SetServer(null!);
+			ServersEFCoreRepository.AddServer(server);
 			NavigationManager.NavigateTo($"/server/back_from/{server.City}");
 		}
 	}

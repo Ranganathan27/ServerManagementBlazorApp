@@ -2,6 +2,8 @@
 
 @inject NavigationManager NavigationManager
 
+@inject IServersEFCoreRepository ServersEFCoreRepository
+
 @inject ChennaiOnlineServerStore ChennaiOnlineServerStore
 @inject MaduraiOnlineServerStore MaduraiOnlineServerStore
 
@@ -68,7 +70,7 @@
 	{
 		if (id > 0)
 		{
-			ServerRepository.DeleteServer(id);
+			ServersEFCoreRepository.DeleteServer(id);
 			NavigationManager.Refresh();
 			NavigationManager.NavigateTo("/server", true);
 		}
@@ -107,7 +109,7 @@
 						var num = ChennaiOnlineServerStore.GetNumberOfServersOnline();
 						if (status)
 							ChennaiOnlineServerStore.SetNumberOfServerOnline(num + 1);
-						else if (num > 1)
+						else if (num >= 1)
 							ChennaiOnlineServerStore.SetNumberOfServerOnline(num - 1);
 
 						break;
@@ -116,9 +118,9 @@
 						var num1 = MaduraiOnlineServerStore.GetNumberOfServersOnline();
 						if (status)
 							MaduraiOnlineServerStore.SetNumberOfServersOnline(num1 + 1);
-						else if (num1 > 1)
+						else if (num1 >= 1)
 							MaduraiOnlineServerStore.SetNumberOfServersOnline(num1 - 1);
-						
+
 						break;
 
 					default:
@@ -126,6 +128,8 @@
 
 				}
 				this.Server.IsOnline = status;
+
+				ServersEFCoreRepository.UpdateServer(this.Server,this.Server.ServerId);
 			}
 		}
 	}

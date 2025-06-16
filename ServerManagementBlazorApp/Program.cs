@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ServerManagementBlazorApp.Components;
 using ServerManagementBlazorApp.Data;
+using ServerManagementBlazorApp.Models;
 using ServerManagementBlazorApp.StateStore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,8 @@ builder.Services.AddTransient<SessionStorage>();
 builder.Services.AddScoped<ContainerStorage>();
 builder.Services.AddScoped<ChennaiOnlineServerStore>();
 builder.Services.AddScoped<MaduraiOnlineServerStore>();
+
+builder.Services.AddTransient<IServersEFCoreRepository, ServersEFCoreRepository>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();

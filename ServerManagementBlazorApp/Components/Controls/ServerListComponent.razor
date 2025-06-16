@@ -1,6 +1,7 @@
 ﻿
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
+@inject IServersEFCoreRepository ServersEFCoreRepository
 
 <table class="mt-3 table table-striped">
 	<RepeatedComponent Items="this.servers">
@@ -47,11 +48,11 @@
 	{
 		if (string.IsNullOrWhiteSpace(this.SearchFilter))
 		{
-			servers = ServerRepository.GetServerByCity(CityName ?? "chennai");
+			servers = ServersEFCoreRepository.GetServersByCity(CityName ?? "chennai");
 		}
 		else
 		{
-			servers = ServerRepository.SearchServer(this.SearchFilter);
+			servers = ServersEFCoreRepository.SearchServer(this.SearchFilter);
 
 		}
 	}

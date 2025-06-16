@@ -7,6 +7,8 @@
 @inject ChennaiOnlineServerStore ChennaiOnlineServerStore
 @inject MaduraiOnlineServerStore MaduraiOnlineServerStore
 
+@inject IServersEFCoreRepository ServersEFCoreRepository
+
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 
@@ -72,7 +74,7 @@
 		{
 			case "Chennai":
 
-				var serversChennai = ServerRepository.GetServerByCity("Chennai");
+				var serversChennai = ServersEFCoreRepository.GetServersByCity("Chennai");
 
 				if (serversChennai is not null)
 					ChennaiOnlineServerStore.SetNumberOfServerOnline(serversChennai.Count(x => x.IsOnline));
@@ -80,7 +82,7 @@
 				break;
 
 			case "Madurai":
-				var serversMadurai = ServerRepository.GetServerByCity("Madurai");
+				var serversMadurai = ServersEFCoreRepository.GetServersByCity("Madurai");
 
 				if (serversMadurai is not null)
 					MaduraiOnlineServerStore.SetNumberOfServersOnline(serversMadurai.Count(x => x.IsOnline));
